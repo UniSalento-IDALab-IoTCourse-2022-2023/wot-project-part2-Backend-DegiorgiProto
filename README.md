@@ -20,3 +20,7 @@ npm install ws
 Questa repository riguarda l'implementazione di un server node.js che inizialmente instaura una connessione al database mongoDB e successivamente mette a disposizione delle API per inserire, prelevare e cancellare i dati all'interno del database. 
 Inoltre è stato istanziato un web socket per la gestione di eventuali notifiche verso l'app android da parte del server.
 La scalabilità del server permette la connessione dell'app android e dell'app web e la creazione delle API utilizzabili da entrambe.
+
+### ATTENZIONE
+Tutti gli URL utilizzati sono personalizzabili; c'è infatti la possibilità di cambiare l'indirizzo IP con il proprio indirizzo corrispondente dalla wlan, con localhost o con un indirizzo IP corrispondente ad un servizio Cloud, a seconda di dove si trova il server e il database.
+In questo caso specifico l'idea è stata di usare il servizio AWS EC2 su cui istanziare il database.
