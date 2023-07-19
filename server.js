@@ -4,7 +4,7 @@ const {WebSocketServer, WebSocket} = require("ws");
 const wss = new WebSocket.Server({ port : 8000});
 
 const mongoClient = require("mongodb").MongoClient
-const url = "mongodb://localhost:27017"
+const url = "mongodb://54.225.96.108:27017"
 
 const app = express()
 

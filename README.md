@@ -7,7 +7,6 @@ L'architettura è costituita da:
 3. un'app web utilizzabile dal medico che dà la possibilità di visualizzare i propri pazienti e i relativi dati acquisiti e aggiunti attraverso dei grafici [repo app web](https://github.com/UniSalento-IDALab-IoTCourse-2022-2023/wot-project-part3-WebApp-DegiorgiProto)
 4. un backend costituito da un server che fa da intermediario con il database che raccoglie i dati acquisiti e che permette quindi di aggiungerli e prelevarli per la visualizzazione, e il database stesso. [repo backend](https://github.com/UniSalento-IDALab-IoTCourse-2022-2023/wot-project-part2-Backend-DegiorgiProto)
 
-![[photo_2023-06-08_11-52-42.jpg]]
 
 ## Operazioni preliminari
 Bisogna installare le librerie relative al database, all'implementazione delle API e all'implementazione del web socket
