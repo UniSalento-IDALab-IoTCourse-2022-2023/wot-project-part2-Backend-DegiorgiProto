@@ -11,6 +11,7 @@ const url = "mongodb://54.225.96.108:27017"
 const app = express()
 const path = require('path');
 const {response} = require("express");
+const {options} = require("axios");
 const hbs = exphbs.create({
     // Configurazione aggiuntiva
     defaultLayout: false, // Disabilita l'uso di un layout predefinito
@@ -36,6 +37,9 @@ let diabetes;
 let doctors;
 let exercises;
 let notifications;
+
+const today = new Date();
+const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
 
 //connessione socket
 wss.on('connection', (ws) => {
@@ -91,12 +95,12 @@ app.post("/aggiungiUtente", (req, res) => {
             doctor: req.body.doctor
         }).then(() => {
         console.log("Insertion done");
-        res.status(200).json({ ok : true})
+        return res.status(200).json({ ok : true})
         //mongoClient.close();
     }).catch(err => {
         console.log("Insertion error");
         console.log(err);
-        res.status(500).json({ err: err })
+        return res.status(500).json({ err: err })
     });
 })
 
@@ -107,7 +111,7 @@ app.get("/lista", async (req, res) => {
     for await (const doc of cursor) {
         results.push(doc);
     }
-    res.status(200).json({ utenti: results })
+    return res.status(200).json({ utenti: results })
 })
 
 //getByEmail
@@ -116,8 +120,9 @@ app.get("/elemento", async (req, res) => {
     const cursor = utenti.find({emailAddress: email_address}, {});
     for await (const doc of cursor) {
         console.log("Getting done");
-        res.status(200).json({utenti: doc})
+        return res.status(200).json({utenti: doc})
     }
+    return res.status(200).json({utenti:{"email": "no email"}})
 })
 
 
@@ -135,7 +140,7 @@ app.get("/pazienti", async (req, res) => {
 //deletebyEmail
 app.delete("/cancella", (req, res) => {
     utenti.deleteOne({emailAddress: req.body.emailAddress}, {});
-    res.status(200).json({ok: true})
+    return res.status(200).json({ok: true})
 })
 
 //relativo alla collection verity sense
@@ -153,16 +158,16 @@ app.post("/aggiungiVS", (req, res) => {
             ppg3: req.body.ppg3,
             ppi: req.body.ppi,
             emailAddress: req.body.emailAddress,
-            date: new Date().toDateString(),
+            date: today.toLocaleString('it-IT',options).replace(/ /g,'-'),
             hour: new Date().toLocaleTimeString().toString()
         }).then(() => {
         console.log("Insertion done");
-        res.status(200).json({ ok : true})
+        return res.status(200).json({ ok : true})
         //mongoClient.close();
     }).catch(err => {
         console.log("Insertion error");
         console.log(err);
-        res.status(500).json({ err: err })
+        return res.status(500).json({ err: err })
     });
 })
 
@@ -173,7 +178,7 @@ app.get("/allVS", async (req, res) => {
     for await (const doc of cursor) {
         results.push(doc);
     }
-    res.status(200).json({ veritySense: results })
+    return res.status(200).json({ veritySense: results })
 })
 
 //getByEmail vs
@@ -184,7 +189,7 @@ app.get("/parametriVS", async (req, res) => {
     for await (const doc of cursor) {
         results.push(doc);
     }
-    res.status(200).json({veritySense: results})
+    return res.status(200).json({veritySense: results})
 })
 
 //getByEmail e Giorno
@@ -196,7 +201,7 @@ app.get("/vsGrafico", async (req, res) => {
     for await (const doc of cursor) {
         results.push(doc);
     }
-    res.status(200).json({veritySense: results})
+    return res.status(200).json({veritySense: results})
 })
 
 
@@ -213,7 +218,7 @@ app.put("/hrVS", (req, res) => {
             },
             $currentDate: {lastUpdated: true}
         })
-    res.status(200).json({veritySense: results})
+    return res.status(200).json({veritySense: results})
 })
 
 //aggiornamento verity sense ecg
@@ -228,7 +233,7 @@ app.put("/ecgVS", (req, res) => {
             },
             $currentDate: {lastUpdated: true}
         })
-    res.status(200).json({veritySense: results})
+    return res.status(200).json({veritySense: results})
 })
 
 //aggiornamento verity sense acc
@@ -243,7 +248,7 @@ app.put("/accVS", (req, res) => {
             },
             $currentDate: {lastUpdated: true}
         })
-    res.status(200).json({veritySense: results})
+    return res.status(200).json({veritySense: results})
 })
 
 //aggiornamento verity sense gyro
@@ -258,7 +263,7 @@ app.put("/gyroVS", (req, res) => {
             },
             $currentDate: {lastUpdated: true}
         })
-    res.status(200).json({veritySense: results})
+    return res.status(200).json({veritySense: results})
 })
 
 //aggiornamento verity sense magn
@@ -273,7 +278,7 @@ app.put("/magnVS", (req, res) => {
             },
             $currentDate: {lastUpdated: true}
         })
-    res.status(200).json({veritySense: results})
+    return res.status(200).json({veritySense: results})
 })
 
 //aggiornamento verity sense ppg
@@ -288,7 +293,7 @@ app.put("/ppgVS", (req, res) => {
             },
             $currentDate: {lastUpdated: true}
         })
-    res.status(200).json({veritySense: results})
+    return res.status(200).json({veritySense: results})
 })
 
 //aggiornamento verity sense ppi
@@ -303,7 +308,7 @@ app.put("/ppiVS", (req, res) => {
             },
             $currentDate: {lastUpdated: true}
         })
-    res.status(200).json({veritySense: results})
+    return res.status(200).json({veritySense: results})
 })
 
 //relativo alla collection polar H10
@@ -312,19 +317,18 @@ app.post("/aggiungiH10", (req, res) => {
     polarH10.insertOne(
         {
             heartRate: req.body.heartRate,
-            rrs : req.body.rrs,
-            rr : req.body.rr,
+            ecg : req.body.ecg,
             emailAddress: req.body.emailAddress,
-            date: new Date().toDateString(),
+            date: today.toLocaleDateString('it-IT', options).replace(/ /g, '-'),
             hour: new Date().toLocaleTimeString().toString()
         }).then(() => {
         console.log("Insertion done");
-        res.status(200).json({ ok : true})
+        return res.status(200).json({ ok : true})
         //mongoClient.close();
     }).catch(err => {
         console.log("Insertion error");
         console.log(err);
-        res.status(500).json({ err: err })
+        return res.status(500).json({ err: err })
     });
 })
 
@@ -335,7 +339,7 @@ app.get("/allH10", async (req, res) => {
     for await (const doc of cursor) {
         results.push(doc);
     }
-    res.status(200).json({ polarH10: results })
+    return res.status(200).json({ polarH10: results })
 })
 
 //getByEmail h10
@@ -346,7 +350,7 @@ app.get("/parametriH10", async (req, res) => {
     for await (const doc of cursor) {
         results.push(doc);
     }
-    res.status(200).json({polarH10: results})
+    return res.status(200).json({polarH10: results})
 })
 
 //getByEmail e Giorno
@@ -358,7 +362,7 @@ app.get("/h10Grafico", async (req, res) => {
     for await (const doc of cursor) {
         results.push(doc);
     }
-    res.status(200).json({polarH10: results})
+    return res.status(200).json({polarH10: results})
 })
 
 //aggiornamento parametri H10
@@ -370,7 +374,7 @@ app.put("/polarH10", (req, res) => {
             },
             $currentDate: {lastUpdated: true}
         })
-    res.status(200).json({polarH10: results})
+    return res.status(200).json({polarH10: results})
 })
 
 //relativo alla collection pressione
@@ -386,12 +390,12 @@ app.post("/aggiungiPres", (req, res) => {
             date: new Date().toDateString() + " " + new Date().toLocaleTimeString().toString()
         }).then(() => {
         console.log("Insertion done");
-        res.status(200).json({ ok : true})
+        return res.status(200).json({ ok : true})
         //mongoClient.close();
     }).catch(err => {
         console.log("Insertion error");
         console.log(err);
-        res.status(500).json({ err: err })
+        return res.status(500).json({ err: err })
     });
 })
 
@@ -402,7 +406,7 @@ app.get("/allPres", async (req, res) => {
     for await (const doc of cursor) {
         results.push(doc);
     }
-    res.status(200).json({ pression: results })
+    return res.status(200).json({ pression: results })
 })
 
 //getByEmail pression
@@ -413,7 +417,7 @@ app.get("/parametriPres", async (req, res) => {
     for await (const doc of cursor) {
         results.push(doc);
     }
-    res.status(200).json({pression: results})
+    return res.status(200).json({pression: results})
 })
 
 //getByEmail e Giorno
@@ -425,7 +429,7 @@ app.get("/presGrafico", async (req, res) => {
     for await (const doc of cursor) {
         results.push(doc);
     }
-    res.status(200).json({pression: results})
+    return res.status(200).json({pression: results})
 })
 
 //relativo alla collection diabete
@@ -440,12 +444,12 @@ app.post("/aggiungiDiab", (req, res) => {
             date: new Date().toDateString() + " " + new Date().toLocaleTimeString().toString()
         }).then(() => {
         console.log("Insertion done");
-        res.status(200).json({ ok : true})
+        return res.status(200).json({ ok : true})
         //mongoClient.close();
     }).catch(err => {
         console.log("Insertion error");
         console.log(err);
-        res.status(500).json({ err: err })
+        return res.status(500).json({ err: err })
     });
 })
 
@@ -456,7 +460,7 @@ app.get("/allDiab", async (req, res) => {
     for await (const doc of cursor) {
         results.push(doc);
     }
-    res.status(200).json({ diabetes: results })
+    return res.status(200).json({ diabetes: results })
 })
 
 //getByEmail diabete
@@ -467,7 +471,7 @@ app.get("/parametriDiab", async (req, res) => {
     for await (const doc of cursor) {
         results.push(doc);
     }
-    res.status(200).json({diabetes: results})
+    return res.status(200).json({diabetes: results})
 })
 
 //getByEmail e Giorno
@@ -479,7 +483,7 @@ app.get("/diabGrafico", async (req, res) => {
     for await (const doc of cursor) {
         results.push(doc);
     }
-    res.status(200).json({diabetes: results})
+    return res.status(200).json({diabetes: results})
 })
 
 //relativa alla collection esercizi
@@ -493,12 +497,12 @@ app.post("/aggiungiEsercizio", (req, res) => {
             emailAddress: req.body.emailAddress
         }).then(() => {
         console.log("Insertion done");
-        res.status(200).json({ ok : true})
+        return res.status(200).json({ ok : true})
         //mongoClient.close();
     }).catch(err => {
         console.log("Insertion error");
         console.log(err);
-        res.status(500).json({ err: err })
+        return res.status(500).json({ err: err })
     });
 })
 
@@ -509,7 +513,7 @@ app.get("/allexe", async (req, res) => {
     for await (const doc of cursor) {
         results.push(doc);
     }
-    res.status(200).json({ exercises: results })
+    return res.status(200).json({ exercises: results })
 })
 
 //getByEmail esercizi
@@ -520,13 +524,20 @@ app.get("/exemail", async (req, res) => {
     for await (const doc of cursor) {
         results.push(doc);
     }
-    res.status(200).json({exercises: results})
+    return res.status(200).json({exercises: results})
 })
 
 //delete by date
 app.delete("/noExe", (req, res) => {
-    utenti.deleteOne({inizio: req.body.inizio}, {});
-    res.status(200).json({ok: true})
+    const email_address = req.query.email_address;
+    const start = req.query.start;
+    exercises.deleteOne({emailAddress: email_address, inizio: start}, {}).then(() => {
+        console.log("Delete done");
+        return res.status(200).json({ok: true});
+    }).catch(error => {
+        console.log("Error during delete:", error);
+        return res.status(500).json({ok: false, error: error});
+    });
 })
 
 //relativa alla collection notifiche
@@ -538,12 +549,12 @@ app.post("/aggiungiNotifica", (req, res) => {
             emailAddress: req.body.emailAddress
         }).then(() => {
         console.log("Insertion done");
-        res.status(200).json({ ok : true})
+        return res.status(200).json({ ok : true})
         //mongoClient.close();
     }).catch(err => {
         console.log("Insertion error");
         console.log(err);
-        res.status(500).json({ err: err })
+        return res.status(500).json({ err: err })
     });
 })
 
@@ -556,7 +567,7 @@ app.get("/notificaEmail", async (req, res) => {
         console.log("Getting done");
         results.push(doc)
     }
-    res.status(200).json({notifiche: results})
+    return res.status(200).json({notifiche: results})
 })
 
 //relativa all'app web
