@@ -39,7 +39,7 @@ let exercises;
 let notifications;
 
 const today = new Date();
-const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
+const option = { year: 'numeric', month: 'numeric', day: 'numeric' };
 
 //connessione socket
 wss.on('connection', (ws) => {
@@ -158,7 +158,7 @@ app.post("/aggiungiVS", (req, res) => {
             ppg3: req.body.ppg3,
             ppi: req.body.ppi,
             emailAddress: req.body.emailAddress,
-            date: today.toLocaleString('it-IT',options).replace(/ /g,'-'),
+            date: today.toLocaleString('it-IT',option).replace(/ /g,'-'),
             hour: new Date().toLocaleTimeString().toString()
         }).then(() => {
         console.log("Insertion done");
@@ -319,7 +319,7 @@ app.post("/aggiungiH10", (req, res) => {
             heartRate: req.body.heartRate,
             ecg : req.body.ecg,
             emailAddress: req.body.emailAddress,
-            date: today.toLocaleDateString('it-IT', options).replace(/ /g, '-'),
+            date: today.toLocaleDateString('it-IT', option).replace(/ /g, '-'),
             hour: new Date().toLocaleTimeString().toString()
         }).then(() => {
         console.log("Insertion done");
